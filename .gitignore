@@ -1,0 +1,27 @@
+# --- Frontend (Node/Next.js) ---
+node_modules/
+.next/
+out/
+build/
+.env
+.env.local
+.DS_Store
+
+# --- Backend (Python) ---
+backend/__pycache__/
+backend/*.pyc
+backend/venv/
+backend/.venv/
+backend/env/
+
+# --- Dados Locais (Não subir para o GitHub) ---
+*.db
+*.sqlite3
+backend/financeiro.db
+backend/comprovantes/
+
+# Ignorar builds do Electron e Next.js
+dist/
+out/
+win-unpacked/
+.DS_Store

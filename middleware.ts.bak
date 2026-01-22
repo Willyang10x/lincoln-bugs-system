@@ -1,0 +1,39 @@
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+// Rotas que precisam de proteção
+const protectedRoutes = ['/dashboard', '/pagamentos', '/recebimentos', '/relatorios', '/fornecedores', '/documentos', '/fluxo', '/configuracoes']
+
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get('finance_token')?.value
+  const { pathname } = request.nextUrl
+
+  // Se tentar acessar rota protegida SEM token
+  if (protectedRoutes.some(route => pathname.startsWith(route)) && !token) {
+    const loginUrl = new URL('/login', request.url)
+    return NextResponse.redirect(loginUrl)
+  }
+
+  // (Opcional) Se tentar acessar Login COM token, joga pro Dashboard
+  if (pathname === '/login' && token) {
+    const dashboardUrl = new URL('/dashboard', request.url)
+    return NextResponse.redirect(dashboardUrl)
+  }
+
+  return NextResponse.next()
+}
+
+// Configuração para o Middleware rodar apenas nas rotas necessárias (melhora performance)
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public files (images, etc)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico|hero.png|placeholder).*)',
+  ],
+}
