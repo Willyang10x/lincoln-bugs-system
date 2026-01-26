@@ -1,7 +1,9 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'export',      // <--- OBRIGATÓRIO
+  images: {
+    unoptimized: true,   // <--- OBRIGATÓRIO
+  },
   typescript: {
-    // Isso força o build a continuar mesmo com erros de TS
     ignoreBuildErrors: true,
   },
 };
