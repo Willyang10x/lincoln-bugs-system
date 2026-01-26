@@ -124,9 +124,16 @@ oauth.register(
 
 cloudinary.config(secure=True)
 
+origins = [
+    "http://localhost:3000",
+    "https://lincoln-bugs-system.vercel.app", # Seu site novo
+    "https://lincoln-bugs-system-git-main-willyang10xs-projects.vercel.app", # Previews da Vercel
+    os.getenv("FRONTEND_URL") # Pega do ambiente também
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins, # <--- Agora sim!
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
