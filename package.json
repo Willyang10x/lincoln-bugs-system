@@ -1,5 +1,5 @@
 {
-  "name": "Lincoln Bugs System",
+  "name": "Lincoln-Bugs-System",
   "version": "0.1.0",
   "description": "Sistema Operacional Financeiro Completo",
   "author": "Willyan <willyangabrielfxt@gmail.com>",
@@ -84,8 +84,8 @@
     "wait-on": "^8.0.1"
   },
   "build": {
-    "appId": "com.financeos.app",
-    "productName": "Finance OS",
+    "appId": "com.lincolnbugs.app",
+    "productName": "Lincoln Bugs System",
     "copyright": "Copyright © 2026 Willyan",
     "directories": {
       "output": "dist"
