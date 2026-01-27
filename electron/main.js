@@ -20,6 +20,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false, // Necessário para evitar bloqueios simples
+      webSecurity: false
     },
     autoHideMenuBar: true,
   })
