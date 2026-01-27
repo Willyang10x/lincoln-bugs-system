@@ -148,7 +148,12 @@ def get_db():
 
 # --- FUNÇÕES DE SEGURANÇA ---
 def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        # Tenta verificar a senha
+        return pwd_context.verify(plain_password, hashed_password)
+    except Exception:
+        # Se o hash for inválido (ex: usuário do Google tentando login normal), retorna Falso
+        return False
 
 def get_password_hash(password):
     return pwd_context.hash(password)
