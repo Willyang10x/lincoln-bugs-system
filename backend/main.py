@@ -21,6 +21,7 @@ from pydantic import BaseModel
 # Bibliotecas de Segurança
 from passlib.context import CryptContext
 from jose import JWTError, jwt
+from passlib.exc import UnknownHashError 
 
 # --- CONFIGURAÇÃO DO BANCO DE DADOS ---
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -202,6 +203,10 @@ async def update_avatar(file: UploadFile = File(...), db: Session = Depends(get_
 class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     password: Optional[str] = None
+    
+# --- MODELO PARA RECUPERAÇÃO DE SENHA ---
+class EmailSchema(BaseModel):
+    email: str
 
 @app.put("/users/me")
 async def update_user_data(user_data: UserUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
@@ -257,6 +262,46 @@ async def auth_google_callback(request: Request, db: Session = Depends(get_db)):
     db.commit()
     access_token = create_access_token(data={"sub": user.email})
     return RedirectResponse(url=f"{os.getenv('FRONTEND_URL')}/auth-callback?token={access_token}")
+
+# --- ROTA DE RECUPERAÇÃO DE SENHA ---
+@app.post("/auth/forgot-password")
+def forgot_password(data: EmailSchema, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == data.email).first()
+    if not user:
+        # Retorna 404 para o front avisar o usuário
+        raise HTTPException(status_code=404, detail="E-mail não encontrado no sistema.")
+
+    # Gera um token que expira em 1 hora
+    token = create_access_token(data={"sub": user.email}, expires_delta=timedelta(hours=1))
+    
+    # Monta o link (apontando para o frontend novo)
+    reset_link = f"{os.getenv('FRONTEND_URL')}/reset-password?token={token}"
+    
+    # ATUALIZADO: Botão Dourado (#EAB308) no email
+    html_content = f"""
+    <div style="font-family: sans-serif; color: #333;">
+        <h1>Recuperação de Senha</h1>
+        <p>Olá, <strong>{user.full_name}</strong>.</p>
+        <p>Recebemos uma solicitação para redefinir sua senha no Lincoln Bugs System.</p>
+        <p>Clique no botão abaixo para criar uma nova senha:</p>
+        <a href="{reset_link}" style="background-color: #EAB308; color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 20px 0; font-weight: bold;">Redefinir Minha Senha</a>
+        <p style="color: #666; font-size: 12px;">Se você não solicitou isso, apenas ignore este e-mail.</p>
+    </div>
+    """
+
+    try:
+        # Envia usando o Resend
+        resend.Emails.send({
+            "from": "Lincoln Bugs Security <onboarding@resend.dev>",
+            "to": user.email,
+            "subject": "Redefinir Senha - Lincoln Bugs System",
+            "html": html_content
+        })
+    except Exception as e:
+        print(f"Erro Resend: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao enviar o e-mail.")
+
+    return {"message": "Email enviado com sucesso"}
 
 # --- ROTA DE IA (DESBLOQUEADA) ---
 @app.post("/system/analyze-finances")
