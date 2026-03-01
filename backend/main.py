@@ -379,6 +379,15 @@ async def criar_recebimento(titulo: str = Form(...), valor: float = Form(...), d
 def listar_recebimentos(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return db.query(Recebimento).filter(Recebimento.owner_id == current_user.id).all()
 
+@app.delete("/recebimentos/{id}")
+def deletar_recebimento(id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    item = db.query(Recebimento).filter(Recebimento.id == id, Recebimento.owner_id == current_user.id).first()
+    if item: 
+        db.delete(item)
+        db.commit()
+        return {"ok": True}
+    raise HTTPException(status_code=404, detail="Recebimento não encontrado")
+
 @app.get("/system/reset-db-force")
 def reset_database():
     Base.metadata.drop_all(bind=engine) 
