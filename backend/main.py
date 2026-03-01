@@ -74,7 +74,8 @@ class Pagamento(Base):
     titulo = Column(String, index=True)
     valor = Column(Float)
     categoria = Column(String) 
-    data_pagamento = Column(DateTime, default=datetime.utcnow)
+    # CORRIGIDO AQUI DE utcnow PARA now
+    data_pagamento = Column(DateTime, default=datetime.now)
     comprovante_path = Column(String, nullable=True)
     owner_id = Column(Integer, ForeignKey("users.id")) 
 
@@ -84,7 +85,8 @@ class Recebimento(Base):
     titulo = Column(String, index=True)
     valor = Column(Float)
     cliente = Column(String) 
-    data_recebimento = Column(DateTime, default=datetime.utcnow)
+    # CORRIGIDO AQUI DE utcnow PARA now
+    data_recebimento = Column(DateTime, default=datetime.now)
     status = Column(String, default="Recebido")
     owner_id = Column(Integer, ForeignKey("users.id"))
 
@@ -95,7 +97,8 @@ class Fornecedor(Base):
     email = Column(String)
     telefone = Column(String)
     categoria = Column(String)
-    data_cadastro = Column(DateTime, default=datetime.utcnow)
+    # CORRIGIDO AQUI DE utcnow PARA now
+    data_cadastro = Column(DateTime, default=datetime.now)
     owner_id = Column(Integer, ForeignKey("users.id"))
 
 class Documento(Base):
@@ -104,7 +107,8 @@ class Documento(Base):
     titulo = Column(String, index=True)
     categoria = Column(String)
     arquivo_url = Column(String)
-    data_upload = Column(DateTime, default=datetime.utcnow)
+    # CORRIGIDO AQUI DE utcnow PARA now
+    data_upload = Column(DateTime, default=datetime.now)
     owner_id = Column(Integer, ForeignKey("users.id"))
 
 Base.metadata.create_all(bind=engine)
