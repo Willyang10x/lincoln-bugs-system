@@ -245,7 +245,9 @@ async def login_google(request: Request):
     redirect_uri = str(request.url_for('auth_google_callback'))
     if "onrender.com" in redirect_uri and redirect_uri.startswith("http://"):
         redirect_uri = redirect_uri.replace("http://", "https://", 1)
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+    
+    # Adicionamos o prompt='select_account' aqui embaixo! 👇
+    return await oauth.google.authorize_redirect(request, redirect_uri, prompt='select_account')
 
 @app.get("/auth/google/callback")
 async def auth_google_callback(request: Request, db: Session = Depends(get_db)):
